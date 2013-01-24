@@ -9,12 +9,8 @@ import smtplib
 import socket
 import argparse
 import sys
-import os.path
-import ConfigParser
 from functools import partial
-
-SECRETS = os.path.expanduser('~/.secrets')
-
+import absence.secrets as secrets
 
 class BaseSendmail(object):
     """
@@ -63,8 +59,7 @@ class BaseSendmail(object):
 
 
 def create_mailer():
-    c = ConfigParser.ConfigParser()
-    c.read(SECRETS)
+    c = secrets.read()
     user = c.get('mail', 'user')
     password = c.get('mail', 'password')
     server = c.get('mail', 'server')
