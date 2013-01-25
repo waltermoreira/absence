@@ -1,5 +1,6 @@
 from __future__ import print_function
 import os
+import sys
 import sh
 import itertools
 import absence.secrets as secrets
@@ -18,17 +19,15 @@ class DuplicityDriver(object):
             self.secrets.get('gpg', 'passphrase'))
 
     def backup_to(self, destination):
-        print('Sending to {}...'.format(destination))
-        options = (['--archive-dir', '{}/.cache/duplicity'.format(secrets.DIRECTORY),
-                    '--allow-source-mismatch',
+        options = (['--allow-source-mismatch',
                     '--full-if-older-than', '30D']
-                    + self.gpg_key()
-                    + self.includes()
+                    + self.includes
                     + ['--exclude', '**', os.environ['HOME'], destination])
         return self.execute(*options)
 
     def execute(self, *options):
         try:
+            options = self.gpg_key + self.archive + list(options)
             return sh.duplicity(*options, _err=self._save_stderr).wait()
         except sh.ErrorReturnCode:
             options_str = '\n'.join(options)
@@ -38,25 +37,22 @@ class DuplicityDriver(object):
                                      body, '"absence" failed')
             else:
                 print(body)
-            
-    def gpg_key(self):
-        return ['--encrypt-key', self.secrets.get('gpg', 'key')]
-
+            return None
+        
     def backup(self):
-        for destination in self.destinations():
-            self.backup_to(destination)
+        for destination in self.destinations:
+            print('Sending to {}...'.format(destination), end=' ')
+            cmd = self.backup_to(destination)
+            print('done' if cmd is not None else 'failed')
 
     def check(self, destination):
-        options = self.gpg_key() + ['collection-status', destination]
-        return self.execute(*options).stdout
+        return self.execute('collection-status', destination).stdout
 
     def list_files(self, destination):
-        options = self.gpg_key() + ['list-current-files', destination]
-        return self.execute(*options).stdout
+        return self.execute('list-current-files', destination).stdout
 
     def restore(self, from_destination, to_directory):
-        options = self.gpg_key() + ['restore', from_destination, to_directory]
-        return self.execute(*options)
+        return self.execute('restore', from_destination, to_directory)
         
     def _save_stderr(self, line):
         self._stderr.append(line)
@@ -64,14 +60,25 @@ class DuplicityDriver(object):
     def _show_stderr(self):
         return ''.join(self._stderr)
 
+    @property
+    def gpg_key(self):
+        return ['--encrypt-key', self.secrets.get('gpg', 'key')]
+
+    @property
+    def archive(self):
+        return ['--archive-dir', '{}/.cache/duplicity'.format(secrets.DIRECTORY)]
+
+    @property
     def includes(self):
-        return list(itertools.chain(('--include', source) for source in self.sources()))
-        
+        return list(itertools.chain(('--include', source) for source in self.sources))
+
+    @property
     def sources(self):
         home = self.secrets.get('duplicity', 'home')
         return [os.path.join(home, source)
                 for source in self.secrets.get('duplicity', 'sources').split()]
 
+    @property
     def destinations(self):
         return self.secrets.get('duplicity', 'destinations').split()
     
