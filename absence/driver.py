@@ -8,10 +8,11 @@ import absence.sendmail as sendmail
 
 class DuplicityDriver(object):
 
-    def __init__(self):
-        self.secrets = secrets.read()
+    def __init__(self, duplicity_cmd, secrets_cfg, mailer):
+        self.secrets = secrets_cfg
         self._stderr = []
-        self.mailer = sendmail.create_mailer()
+        self.mailer = mailer
+        self.duplicity = duplicity_cmd
         self.send_email = True
         self.set_environment(
             self.secrets.get('s3', 'AWS_ACCESS_KEY_ID'),
@@ -28,7 +29,7 @@ class DuplicityDriver(object):
     def execute(self, *options):
         try:
             options = self.gpg_key + self.archive + list(options)
-            return sh.duplicity(*options, _err=self._save_stderr).wait()
+            return self.duplicity(*options, _err=self._save_stderr).wait()
         except sh.ErrorReturnCode:
             options_str = '\n'.join(options)
             body = self._show_stderr() + '\n' +  options_str
@@ -90,3 +91,7 @@ class DuplicityDriver(object):
 
     def close(self):
         self.set_environment('', '', '')
+
+
+def create_driver():
+    return DuplicityDriver(sh.duplicity, secrets.read(), sendmail.create_mailer())
