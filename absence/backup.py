@@ -68,7 +68,9 @@ class DuplicityDriver(object):
         return list(itertools.chain(('--include', source) for source in self.sources()))
         
     def sources(self):
-        return self.secrets.get('duplicity', 'sources').split()
+        home = self.secrets.get('duplicity', 'home')
+        return [os.path.join(home, source)
+                for source in self.secrets.get('duplicity', 'sources').split()]
 
     def destinations(self):
         return self.secrets.get('duplicity', 'destinations').split()
