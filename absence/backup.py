@@ -42,6 +42,7 @@ class DuplicityDriver(object):
     def backup(self):
         for destination in self.destinations:
             print('Sending to {}...'.format(destination), end=' ')
+            sys.stdout.flush()
             cmd = self.backup_to(destination)
             print('done' if cmd is not None else 'failed')
 
