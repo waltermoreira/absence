@@ -53,7 +53,11 @@ class DuplicityDriver(object):
     def list_files(self, destination):
         options = self.gpg_key() + ['list-current-files', destination]
         return self.execute(*options).stdout
-            
+
+    def restore(self, from_destination, to_directory):
+        options = self.gpg_key() + ['restore', from_destination, to_directory]
+        return self.execute(*options)
+        
     def _save_stderr(self, line):
         self._stderr.append(line)
 
