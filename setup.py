@@ -12,4 +12,8 @@ setup(name='absence',
       scripts=['bin/absence.py'],
       license='LICENSE.txt',
       long_description=open('README.rst').read(),
+      install_requires=[
+          "sh",
+          "boto"
+      ],
       )
