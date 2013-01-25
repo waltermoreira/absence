@@ -11,31 +11,49 @@ class DuplicityDriver(object):
         self.secrets = secrets.read()
         self._stderr = []
         self.mailer = sendmail.create_mailer()
+        self.send_email = True
         self.set_environment(
             self.secrets.get('s3', 'AWS_ACCESS_KEY_ID'),
             self.secrets.get('s3', 'AWS_SECRET_ACCESS_KEY'),
             self.secrets.get('gpg', 'passphrase'))
 
     def backup_to(self, destination):
-        print('Sending to {}...'.format(destination), end=' ')
+        print('Sending to {}...'.format(destination))
         options = (['--archive-dir', '{}/.cache/duplicity'.format(secrets.DIRECTORY),
-                    '--encrypt-key', self.secrets.get('gpg', 'key'),
+                    '--allow-source-mismatch',
                     '--full-if-older-than', '30D']
+                    + self.gpg_key()
                     + self.includes()
                     + ['--exclude', '**', os.environ['HOME'], destination])
+        return self.execute(*options)
+
+    def execute(self, *options):
         try:
-            sh.duplicity(*options, _err=self._save_stderr).wait()
-            print('done')
+            return sh.duplicity(*options, _err=self._save_stderr).wait()
         except sh.ErrorReturnCode:
-            print('failed')
-            self.mailer.sendmail([self.secrets.get('mail', 'user')],
-                                 self._show_stderr(),
-                                 '"absence" failed for {}'.format(destination))
-        
+            options_str = '\n'.join(options)
+            body = self._show_stderr() + '\n' +  options_str
+            if self.send_email:
+                self.mailer.sendmail([self.secrets.get('mail', 'user')],
+                                     body, '"absence" failed')
+            else:
+                print(body)
+            
+    def gpg_key(self):
+        return ['--encrypt-key', self.secrets.get('gpg', 'key')]
+
     def backup(self):
         for destination in self.destinations():
             self.backup_to(destination)
 
+    def check(self, destination):
+        options = self.gpg_key() + ['collection-status', destination]
+        return self.execute(*options).stdout
+
+    def list_files(self, destination):
+        options = self.gpg_key() + ['list-current-files', destination]
+        return self.execute(*options).stdout
+            
     def _save_stderr(self, line):
         self._stderr.append(line)
 
