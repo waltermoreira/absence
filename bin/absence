@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+
+import sys
+import argparse
+import absence.driver
+
+class Main(object):
+
+    def __init__(self, driver):
+        self.driver = driver
+
+    def backup(self, args):
+        print 'Backing up with', args
+
+    def check(self, args):
+        print 'Checking up with', args
+
+    def files(self, args):
+        print 'Files with', args
+
+    def destinations(self, args):
+        print 'Destinations up with', args
+
+    def sources(self, args):
+        print 'Sources with', args
+        
+
+def main():
+    args = parse_args(sys.argv[1:])
+    m = Main(absence.driver.create_driver())
+    getattr(m, args.subparser_name)(args)
+
+def add_destination_option_to(parser):
+    parser.add_argument('-d', '--destination', nargs=1, metavar='dest', default='all',
+                        help='destination (url or id from "destinations" output)')
+        
+def parse_args(args):
+    parser = argparse.ArgumentParser(description='Backup through duplicity')
+    subparsers = parser.add_subparsers(title='subcommands',
+                                       dest='subparser_name',
+                                       description='valid subcommands')
+
+    parser_backup = subparsers.add_parser('backup', help='perform backup')
+    add_destination_option_to(parser_backup)
+
+    parser_check = subparsers.add_parser('check', help='check destination')
+    add_destination_option_to(parser_check)
+
+    parser_list = subparsers.add_parser('files', help='list files')
+    add_destination_option_to(parser_list)
+
+    parser_destinations = subparsers.add_parser('destinations', help='show destinations')
+
+    parser_sources = subparsers.add_parser('sources', help='show sources')
+
+    return parser.parse_args(args)
+
+if __name__ == '__main__':
+    main()
