@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import sys
 import argparse
+from textwrap import dedent
 import absence.driver
 
 class Main(object):
@@ -10,28 +12,53 @@ class Main(object):
         self.driver = driver
 
     def backup(self, args):
-        print 'Backing up with', args
-
-    def check(self, args):
-        print 'Checking up with', args
-
-    def files(self, args):
-        print 'Files with', args
-
-    def destinations(self, args):
-        print 'Destinations up with', args
-
-    def sources(self, args):
-        print 'Sources with', args
+        pass
         
+    def check(self, args):
+        print(self.get_destination(args.destination[0]))
+        
+    def files(self, args):
+        pass
+        
+    def destinations(self, args):
+        print(dedent(
+            """
+            Destinations (select with full url or index number)
 
+            Index  Url
+            ----------
+            """), end='')
+        for i, dest in enumerate(self._destinations):
+            print('{:>4}:  {}'.format(i, dest))
+        print()
+
+    @property
+    def _destinations(self):
+        return ['all'] + self.driver.destinations
+        
+    def sources(self, args):
+        print(dedent(
+            """
+            Sources
+            -------
+            """))
+        print('\n'.join(self.driver.sources))
+        print()
+
+    def get_destination(self, dest):
+        try:
+            i = int(dest)
+            return self._destinations[i]
+        except (ValueError, IndexError):
+            return dest
+        
 def main():
     args = parse_args(sys.argv[1:])
     m = Main(absence.driver.create_driver())
     getattr(m, args.subparser_name)(args)
 
 def add_destination_option_to(parser):
-    parser.add_argument('-d', '--destination', nargs=1, metavar='dest', default='all',
+    parser.add_argument('-d', '--destination', nargs=1, metavar='dest', default=['all'],
                         help='destination (url or id from "destinations" output)')
         
 def parse_args(args):
