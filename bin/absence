@@ -23,7 +23,9 @@ class Main(object):
             print(self.driver.check(destination))
         
     def files(self, args):
-        pass
+        for destination in self.get_destinations(args.destination[0]):
+            print('*** Files in:', destination, '\n')
+            print(self.driver.list_files(destination))
         
     def destinations(self, args):
         print(dedent(
@@ -36,6 +38,12 @@ class Main(object):
         for i, dest in enumerate(self._destinations):
             print('{:>4}:  {}'.format(i, dest))
         print()
+
+    def restore(self, args):
+        [from_dest] = self.get_destinations(args.source[0])
+        directory = args.directory[0]
+        print('\nRestoring from:', from_dest, '\n')
+        self.driver.restore(from_dest, directory)
 
     @property
     def _destinations(self):
@@ -93,6 +101,12 @@ def parse_args(args):
 
     parser_sources = subparsers.add_parser('sources', help='show sources')
 
+    parser_restore = subparsers.add_parser('restore', help='restore from a destination to a directory')
+    parser_restore.add_argument('-s', '--source', nargs=1, metavar='source', required=True,
+                                help='destination name or id from where to restore')
+    parser_restore.add_argument('-d', '--directory', nargs=1, metavar='directory', required=True,
+                                help='directory under which to restore')
+    
     return parser.parse_args(args)
 
 if __name__ == '__main__':
