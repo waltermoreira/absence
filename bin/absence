@@ -4,6 +4,7 @@ from __future__ import print_function
 import sys
 import argparse
 from textwrap import dedent
+from itertools import chain
 import absence.driver
 
 class Main(object):
@@ -12,10 +13,14 @@ class Main(object):
         self.driver = driver
 
     def backup(self, args):
-        pass
+        for destination in self.get_destinations(args.destination[0]):
+            print('*** Backing up to destination:', destination, '\n')
+            print(self.driver.backup_to(destination))
         
     def check(self, args):
-        print(self.get_destination(args.destination[0]))
+        for destination in self.get_destinations(args.destination[0]):
+            print('*** Checking destination:', destination, '\n')
+            print(self.driver.check(destination))
         
     def files(self, args):
         pass
@@ -45,12 +50,19 @@ class Main(object):
         print('\n'.join(self.driver.sources))
         print()
 
-    def get_destination(self, dest):
-        try:
-            i = int(dest)
-            return self._destinations[i]
-        except (ValueError, IndexError):
-            return dest
+    def get_destinations(self, dests):
+        destinations = dests.split(',')
+        def _dest(x):
+            try:
+                dest = self._destinations[int(x)]
+            except (ValueError, IndexError):
+                dest = x
+            if dest == 'all':
+                return self._destinations[1:]
+            else:
+                return [dest]
+        return set(chain.from_iterable(_dest(x) for x in destinations))
+
         
 def main():
     args = parse_args(sys.argv[1:])
@@ -59,7 +71,8 @@ def main():
 
 def add_destination_option_to(parser):
     parser.add_argument('-d', '--destination', nargs=1, metavar='dest', default=['all'],
-                        help='destination (url or id from "destinations" output)')
+                        help=('comma separated destinations (url or id from "destinations"'
+                              'output). "0" or "all" for  all the destinations.'))
         
 def parse_args(args):
     parser = argparse.ArgumentParser(description='Backup through duplicity')
