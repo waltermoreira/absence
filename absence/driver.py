@@ -31,7 +31,7 @@ class DuplicityDriver(object):
             options = self.gpg_key + self.archive + list(options)
             return self.duplicity(*options, _err=self._save_stderr).wait()
         except sh.ErrorReturnCode:
-            options_str = '\n'.join(options)
+            options_str = '\n'.join(map(str, options))
             body = self._show_stderr() + '\n' +  options_str
             if self.send_email:
                 self.mailer.sendmail([self.secrets.get('mail', 'user')],
