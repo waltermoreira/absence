@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 import sys
+import os
 import argparse
 from textwrap import dedent
 from itertools import chain
@@ -73,6 +74,7 @@ class Main(object):
 
         
 def main():
+    os.environ['PATH'] = os.pathsep.join(['/usr/local/bin', os.environ['PATH']])
     args = parse_args(sys.argv[1:])
     m = Main(absence.driver.create_driver())
     getattr(m, args.subparser_name)(args)
