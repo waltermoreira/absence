@@ -46,6 +46,10 @@ class Main(object):
         print('\nRestoring from:', from_dest, '\n')
         self.driver.restore(from_dest, directory)
 
+    def cleanup(self, args):
+        for destination in self.get_destinations(args.destination[0]):
+            print(self.driver.cleanup(destination))
+            
     @property
     def _destinations(self):
         return ['all'] + self.driver.destinations
@@ -108,6 +112,9 @@ def parse_args(args):
                                 help='destination name or id from where to restore')
     parser_restore.add_argument('-d', '--directory', nargs=1, metavar='directory', required=True,
                                 help='directory under which to restore')
+
+    parser_cleanup = subparsers.add_parser('cleanup', help='cleanup stale files from destination')
+    add_destination_option_to(parser_cleanup)
     
     return parser.parse_args(args)
 

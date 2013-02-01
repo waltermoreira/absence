@@ -55,6 +55,9 @@ class DuplicityDriver(object):
 
     def restore(self, from_destination, to_directory):
         return self.execute('restore', from_destination, to_directory)
+
+    def cleanup(self, destination):
+        return self.execute('cleanup', '--force', destination).stdout
         
     def _save_stderr(self, line):
         self._stderr.append(line)
