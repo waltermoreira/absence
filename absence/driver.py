@@ -1,13 +1,15 @@
 from __future__ import print_function
+
+import itertools
 import os
 import sys
-import sh
-import itertools
+
 import absence.secrets as secrets
 import absence.sendmail as sendmail
+import sh
 
 class DuplicityDriver(object):
-
+    
     def __init__(self, duplicity_cmd, secrets_cfg, mailer):
         self.secrets = secrets_cfg
         self._stderr = []
