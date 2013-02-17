@@ -9,7 +9,7 @@ import absence.sendmail as sendmail
 import sh
 
 class DuplicityDriver(object):
-    
+
     def __init__(self, duplicity_cmd, secrets_cfg, mailer):
         self.secrets = secrets_cfg
         self._stderr = []
@@ -100,3 +100,4 @@ class DuplicityDriver(object):
 
 def create_driver():
     return DuplicityDriver(sh.duplicity, secrets.read(), sendmail.create_mailer())
+

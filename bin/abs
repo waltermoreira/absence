@@ -15,7 +15,9 @@ class Main(object):
 
     def backup(self, args):
         for destination in self.get_destinations(args.destination[0]):
-            print('*** Backing up to destination:', destination, '\n')
+            print('*** [{}] Backing up to destination: {}\n'
+                  .format(datetime.datetime.now().isoformat(' '),
+                          destination))
             print(self.driver.backup_to(destination))
         
     def check(self, args):
