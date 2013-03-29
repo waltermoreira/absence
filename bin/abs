@@ -46,6 +46,7 @@ class Main(object):
     def restore(self, args):
         [from_dest] = self.get_destinations(args.source[0])
         directory = args.directory[0]
+        relpath = args.file[0] if args.file is not None else None
         print('\nRestoring from:', from_dest, '\n')
         if relpath is not None:
             print(' --only restoring', relpath)
