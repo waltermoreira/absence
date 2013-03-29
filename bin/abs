@@ -117,6 +117,9 @@ def parse_args(args):
                                 help='destination name or id from where to restore')
     parser_restore.add_argument('-d', '--directory', nargs=1, metavar='directory', required=True,
                                 help='directory under which to restore')
+    parser_restore.add_argument('-f', '--file', nargs=1, metavar='file',
+                                required=False,
+                                help='file or directory to restore')
 
     parser_cleanup = subparsers.add_parser('cleanup', help='cleanup stale files from destination')
     add_destination_option_to(parser_cleanup)
