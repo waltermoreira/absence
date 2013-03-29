@@ -47,7 +47,9 @@ class Main(object):
         [from_dest] = self.get_destinations(args.source[0])
         directory = args.directory[0]
         print('\nRestoring from:', from_dest, '\n')
-        self.driver.restore(from_dest, directory)
+        if relpath is not None:
+            print(' --only restoring', relpath)
+        self.driver.restore(from_dest, directory, relpath)
 
     def cleanup(self, args):
         for destination in self.get_destinations(args.destination[0]):

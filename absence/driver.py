@@ -55,8 +55,11 @@ class DuplicityDriver(object):
     def list_files(self, destination):
         return self.execute('list-current-files', destination).stdout
 
-    def restore(self, from_destination, to_directory):
-        return self.execute('restore', from_destination, to_directory)
+    def restore(self, from_destination, to_directory, relpath=None):
+        options = ['restore', from_destination, to_directory]
+        if relpath is not None:
+            options[1:1] = ['--file-to-restore', relpath]
+        return self.execute(*options)
 
     def cleanup(self, destination):
         return self.execute('cleanup', '--force', destination).stdout
