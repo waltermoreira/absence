@@ -52,6 +52,10 @@ class Main(object):
             print(' --only restoring', relpath)
         self.driver.restore(from_dest, directory, relpath)
 
+    def remove(self, args):
+        for dest in self.get_destinations(args.destination[0]):
+            print(self.driver.remove(dest, args.older_than[0]))
+        
     def cleanup(self, args):
         for destination in self.get_destinations(args.destination[0]):
             print(self.driver.cleanup(destination))
@@ -121,6 +125,11 @@ def parse_args(args):
     parser_restore.add_argument('-f', '--file', nargs=1, metavar='file',
                                 required=False,
                                 help='file or directory to restore')
+
+    parser_remove = subparsers.add_parser('remove', help='remove old files')
+    parser_remove.add_argument('-t', '--older-than', nargs=1, metavar='older_than', required=True,
+                               help='remove files older than the specified date')
+    add_destination_option_to(parser_remove)
 
     parser_cleanup = subparsers.add_parser('cleanup', help='cleanup stale files from destination')
     add_destination_option_to(parser_cleanup)
