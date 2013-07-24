@@ -32,7 +32,7 @@ class DuplicityDriver(object):
 
     def execute(self, *options):
         try:
-            options = self.gpg_key + self.archive + list(options)
+            options = self.gpg_homedir + self.gpg_key + self.archive + list(options)
             return self.duplicity(*options, _err=self._save_stderr).wait()
         except sh.ErrorReturnCode:
             options_str = '\n'.join(map(str, options))
@@ -78,6 +78,14 @@ class DuplicityDriver(object):
     @property
     def gpg_key(self):
         return ['--encrypt-key', self.secrets.get('gpg', 'key')]
+
+    @property
+    def gpg_homedir(self):
+        homedir = self.secrets.get('gpg', 'homedir')
+        if homedir is not None:
+            return ['--gpg-options', '"homedir={}"'.format(homedir)]
+        else:
+            return []
 
     @property
     def archive(self):
