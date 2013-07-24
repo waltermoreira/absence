@@ -106,6 +106,6 @@ class DuplicityDriver(object):
         self.set_environment('', '', '')
 
 
-def create_driver():
-    return DuplicityDriver(sh.duplicity, secrets.read(), sendmail.create_mailer())
+def create_driver(configdir):
+    return DuplicityDriver(sh.duplicity, secrets.read(configdir), sendmail.create_mailer(configdir))
 

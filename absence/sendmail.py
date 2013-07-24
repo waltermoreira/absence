@@ -2,6 +2,7 @@
 Simple command line utility to send emails through an SMTP server.
 """
 
+import os
 import email
 import email.utils
 import email.mime.text
@@ -58,8 +59,8 @@ class BaseSendmail(object):
         self.smtp.quit()
 
 
-def create_mailer():
-    c = secrets.read()
+def create_mailer(configdir):
+    c = secrets.read(configdir)
     user = c.get('mail', 'user')
     password = c.get('mail', 'password')
     server = c.get('mail', 'server')
@@ -90,5 +91,5 @@ def process_args(args):
 if __name__ == '__main__':
     non_empty, to, msg, subject = process_args(parse_args())
     if non_empty:
-        mailer = create_mailer()
+        mailer = create_mailer(os.path.expanduser('~'))
         mailer.sendmail(to, msg, subject)
