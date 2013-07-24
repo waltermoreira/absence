@@ -90,7 +90,7 @@ class Main(object):
 def main():
     os.environ['PATH'] = os.pathsep.join(['/usr/local/bin', os.environ['PATH']])
     args = parse_args(sys.argv[1:])
-    m = Main(absence.driver.create_driver())
+    m = Main(absence.driver.create_driver(os.path.expanduser(args.configdir[0])))
     getattr(m, args.subparser_name)(args)
 
 def add_destination_option_to(parser):
@@ -100,6 +100,9 @@ def add_destination_option_to(parser):
         
 def parse_args(args):
     parser = argparse.ArgumentParser(description='Backup through duplicity')
+    parser.add_argument('-c', '--configdir', nargs=1, metavar='dir',
+                        default=['~/.absence'],
+                        help='directory where the config file is located')
     subparsers = parser.add_subparsers(title='subcommands',
                                        dest='subparser_name',
                                        description='valid subcommands')
