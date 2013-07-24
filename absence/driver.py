@@ -10,11 +10,12 @@ import sh
 
 class DuplicityDriver(object):
 
-    def __init__(self, duplicity_cmd, secrets_cfg, mailer):
+    def __init__(self, duplicity_cmd, secrets_cfg, mailer, archive_dir):
         self.secrets = secrets_cfg
         self._stderr = []
         self.mailer = mailer
         self.duplicity = duplicity_cmd
+        self.archive_dir = archive_dir
         self.send_email = True
         self.set_environment(
             self.secrets.get('s3', 'AWS_ACCESS_KEY_ID'),
@@ -80,7 +81,7 @@ class DuplicityDriver(object):
 
     @property
     def archive(self):
-        return ['--archive-dir', '{}/.cache/duplicity'.format(secrets.DIRECTORY)]
+        return ['--archive-dir', '{}/.cache/duplicity'.format(self.archive_dir)]
 
     @property
     def includes(self):
@@ -107,5 +108,6 @@ class DuplicityDriver(object):
 
 
 def create_driver(configdir):
-    return DuplicityDriver(sh.duplicity, secrets.read(configdir), sendmail.create_mailer(configdir))
+    return DuplicityDriver(sh.duplicity, secrets.read(configdir),
+                           sendmail.create_mailer(configdir), configdir)
 
