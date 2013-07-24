@@ -19,7 +19,8 @@ class DuplicityDriver(object):
         self.set_environment(
             self.secrets.get('s3', 'AWS_ACCESS_KEY_ID'),
             self.secrets.get('s3', 'AWS_SECRET_ACCESS_KEY'),
-            self.secrets.get('gpg', 'passphrase'))
+            self.secrets.get('gpg', 'passphrase'),
+            self.secrets.get('ftp', 'password'))
 
     def backup_to(self, destination):
         options = (['--allow-source-mismatch',
@@ -95,10 +96,11 @@ class DuplicityDriver(object):
     def destinations(self):
         return self.secrets.get('duplicity', 'destinations').split()
     
-    def set_environment(self, key_id, secret_key, passphrase):
+    def set_environment(self, key_id, secret_key, passphrase, ftp_password):
         os.environ['AWS_ACCESS_KEY_ID'] = key_id
         os.environ['AWS_SECRET_ACCESS_KEY'] = secret_key
         os.environ['PASSPHRASE'] = passphrase
+        os.environ['FTP_PASSWORD'] = ftp_password
 
     def close(self):
         self.set_environment('', '', '')
