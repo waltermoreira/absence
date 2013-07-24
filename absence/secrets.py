@@ -1,20 +1,19 @@
 import os
 import ConfigParser
 
-DIRECTORY = '~/.absence'
 FILE = 'secrets'
 
 class ConfigParserWithDefaults(ConfigParser.ConfigParser):
 
     def get(self, *args, **kwargs):
         try:
-            ConfigParser.ConfigParser.get(self, *args, **kwargs)
+            return ConfigParser.ConfigParser.get(self, *args, **kwargs)
         except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
             return None
             
-def read():
+def read(directory):
     try:
-        os.makedirs(os.path.expanduser(DIRECTORY))
+        os.makedirs(os.path.expanduser(directory))
     except OSError:
         pass
     c = ConfigParserWithDefaults()
