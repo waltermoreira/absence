@@ -83,7 +83,7 @@ class DuplicityDriver(object):
     def gpg_homedir(self):
         homedir = self.secrets.get('gpg', 'homedir')
         if homedir is not None:
-            return ['--gpg-options', '"homedir={}"'.format(homedir)]
+            return ['--gpg-options', '--homedir={}'.format(homedir)]
         else:
             return []
 
