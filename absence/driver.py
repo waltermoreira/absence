@@ -27,7 +27,7 @@ class DuplicityDriver(object):
         options = (['--allow-source-mismatch',
                     '--full-if-older-than', '30D']
                     + self.includes
-                    + ['--exclude', '**', os.environ['HOME'], destination])
+                    + ['--exclude', '**', '/', destination])
         return self.execute(*options)
 
     def execute(self, *options):
