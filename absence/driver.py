@@ -97,10 +97,10 @@ class DuplicityDriver(object):
         return self.secrets.get('duplicity', 'destinations').split()
     
     def set_environment(self, key_id, secret_key, passphrase, ftp_password):
-        os.environ['AWS_ACCESS_KEY_ID'] = key_id
-        os.environ['AWS_SECRET_ACCESS_KEY'] = secret_key
-        os.environ['PASSPHRASE'] = passphrase
-        os.environ['FTP_PASSWORD'] = ftp_password
+        os.environ['AWS_ACCESS_KEY_ID'] = key_id or ''
+        os.environ['AWS_SECRET_ACCESS_KEY'] = secret_key or ''
+        os.environ['PASSPHRASE'] = passphrase or ''
+        os.environ['FTP_PASSWORD'] = ftp_password or ''
 
     def close(self):
         self.set_environment('', '', '')
