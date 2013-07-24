@@ -17,5 +17,6 @@ def read(directory):
     except OSError:
         pass
     c = ConfigParserWithDefaults()
-    c.read(os.path.expanduser(os.path.join(DIRECTORY, FILE)))
+    if not c.read(os.path.expanduser(os.path.join(directory, FILE))):
+        raise IOError('cannot find config file: secrets')
     return c
