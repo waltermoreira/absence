@@ -35,7 +35,7 @@ class DuplicityDriver(object):
     def execute(self, *options):
         try:
             options = self.gpg_homedir + self.gpg_key + self.archive + list(options)
-            return self.duplicity(*options, _err=self._save_stderr).wait()
+            return self.duplicity(*options, _err=self._save_stderr, _out=sys.stdout, _out_bufsize=0).wait()
         except sh.ErrorReturnCode:
             options_str = '\n'.join(map(str, options))
             body = self._show_stderr() + '\n' +  options_str
