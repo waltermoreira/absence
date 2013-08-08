@@ -19,7 +19,7 @@ class Main(object):
             print('*** [{}] Backing up to destination: {}\n'
                   .format(datetime.datetime.now().isoformat(' '),
                           destination))
-            print(self.driver.backup_to(destination))
+            print(self.driver.backup_to(destination, debug=args.debug))
         
     def check(self, args):
         for destination in self.get_destinations(args.destination[0]):
@@ -103,6 +103,8 @@ def parse_args(args):
     parser.add_argument('-c', '--configdir', nargs=1, metavar='dir',
                         default=['~/.absence'],
                         help='directory where the config file is located')
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help='enable debug messages')
     subparsers = parser.add_subparsers(title='subcommands',
                                        dest='subparser_name',
                                        description='valid subcommands')

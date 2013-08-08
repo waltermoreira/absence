@@ -23,11 +23,13 @@ class DuplicityDriver(object):
             self.secrets.get('gpg', 'passphrase'),
             self.secrets.get('ftp', 'password'))
 
-    def backup_to(self, destination):
+    def backup_to(self, destination, debug=False):
         options = (['--allow-source-mismatch',
                     '--full-if-older-than', '30D']
                     + self.includes
                     + ['--exclude', '**', '/', destination])
+        if debug:
+            options.insert(0, '-v9')
         return self.execute(*options)
 
     def execute(self, *options):
