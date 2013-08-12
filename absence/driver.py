@@ -95,7 +95,7 @@ class DuplicityDriver(object):
 
     @property
     def includes(self):
-        return list(itertools.chain(('--include', source) for source in self.sources))
+        return list(itertools.chain.from_iterable(('--include', source) for source in self.sources))
 
     @property
     def sources(self):
