@@ -14,6 +14,22 @@ from functools import partial
 import absence.secrets as secrets
 
 class BaseSendmail(object):
+
+    def __init__(self):
+        self.smtp = None
+        
+    def sendmail(self, to, msg, subject=None):
+        if self.smtp is None:
+            raise smtplib.SMTPException('need to authenticate first')
+        mmsg = email.mime.text.MIMEText(msg)
+        mmsg['Subject'] = subject or '<no subject>'
+        mmsg['From'] = self.from_addr
+        mmsg['To'] = ', '.join(to)
+        self.smtp.sendmail(self.from_addr, to, mmsg.as_string())
+        self.smtp.quit()
+    
+
+class GMailMailer(BaseSendmail):
     """
     Example::
 
@@ -30,6 +46,7 @@ class BaseSendmail(object):
     """
 
     def __init__(self, from_addr, mail_server, password=None):
+        super(GMailMailer, self).__init__()
         self.from_addr = from_addr
         self.password = password
         self.real_name, self.email = email.utils.parseaddr(from_addr)
@@ -48,15 +65,14 @@ class BaseSendmail(object):
         self.smtp.starttls()
         self.smtp.login(self.inbox_name, self.password)
 
-    def sendmail(self, to, msg, subject=None):
-        if self.smtp is None:
-            raise smtplib.SMTPException('need to authenticate first')
-        mmsg = email.mime.text.MIMEText(msg)
-        mmsg['Subject'] = subject or '<no subject>'
-        mmsg['From'] = self.from_addr
-        mmsg['To'] = ', '.join(to)
-        self.smtp.sendmail(self.from_addr, to, mmsg.as_string())
-        self.smtp.quit()
+
+class LocalSMTPMailer(BaseSendmail):
+
+    def __init__(self, from_addr, smtp_host):
+        super(LocalSMTPMailer, self).__init__()
+        self.from_addr = from_addr
+        self.smtp_host = smtp_host
+        self.smtp = smtplib.SMTP(self.smtp_host)
 
 
 def create_mailer(configdir):
@@ -64,7 +80,7 @@ def create_mailer(configdir):
     user = c.get('mail', 'user')
     password = c.get('mail', 'password')
     server = c.get('mail', 'server')
-    return BaseSendmail(user, server, password)
+    return GMailMailer(user, server, password)
 
 
 def parse_args():
