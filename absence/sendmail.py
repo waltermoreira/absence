@@ -77,10 +77,16 @@ class LocalSMTPMailer(BaseSendmail):
 
 def create_mailer(configdir):
     c = secrets.read(configdir)
-    user = c.get('mail', 'user')
-    password = c.get('mail', 'password')
     server = c.get('mail', 'server')
-    return GMailMailer(user, server, password)
+    if server is not None:
+        # configure mail with authentication
+        user = c.get('mail', 'user')
+        password = c.get('mail', 'password')
+        return GMailMailer(user, server, password)
+    else:
+        # use just a local smarthost
+        smtp_host = c.get('mail', 'smarthost')
+        return LocalSMTPMailer('absence@neurotexasresearch.org', smtp_host)
 
 
 def parse_args():
