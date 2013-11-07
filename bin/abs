@@ -14,6 +14,10 @@ class Main(object):
     def __init__(self, driver):
         self.driver = driver
 
+    def test_mail(self, args):
+        sent_to = self.driver.test_mail()
+        print('*** Mail sent to {}'.format(sent_to))
+        
     def backup(self, args):
         for destination in self.get_destinations(args.destination[0]):
             print('*** [{}] Backing up to destination: {}\n'
@@ -138,6 +142,8 @@ def parse_args(args):
 
     parser_cleanup = subparsers.add_parser('cleanup', help='cleanup stale files from destination')
     add_destination_option_to(parser_cleanup)
+
+    parser_test_mail = subparsers.add_parser('test_mail', help='test the notification system')
     
     return parser.parse_args(args)
 

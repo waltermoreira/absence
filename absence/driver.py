@@ -23,6 +23,13 @@ class DuplicityDriver(object):
             self.secrets.get('gpg', 'passphrase'),
             self.secrets.get('ftp', 'password'))
 
+    def test_mail(self):
+        to = self.secrets.get('mail', 'user')
+        self.mailer.sendmail([to],
+                             'This is a test mail from the backup system.',
+                             subject='test mail from backup system')
+        return to
+        
     def backup_to(self, destination, debug=False):
         options = (['--allow-source-mismatch',
                     '--full-if-older-than', '30D']
