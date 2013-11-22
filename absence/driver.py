@@ -67,7 +67,7 @@ class DuplicityDriver(object):
         return self.execute('list-current-files', destination).stdout
 
     def remove(self, destination, older_than):
-        return self.execute('remove-older-than', older_than, '--force', destination).stdout
+        return self.execute('remove-older-than', '--num-retries=1', older_than, '--force', destination).stdout
         
     def restore(self, from_destination, to_directory, relpath=None):
         options = ['restore', from_destination, to_directory]
