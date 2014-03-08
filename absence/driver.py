@@ -31,6 +31,7 @@ class DuplicityDriver(object):
         return to
         
     def backup_to(self, destination, debug=False):
+        self.check_sources()
         options = (['--allow-source-mismatch',
                     '--full-if-older-than', '30D']
                     + self.includes
@@ -63,6 +64,14 @@ class DuplicityDriver(object):
     def check(self, destination):
         return self.execute('collection-status', destination).stdout
 
+    def check_sources(self):
+        """Check all sources exist."""
+        for source in self.sources:
+            if not os.path.exists(source):
+                print('------')
+                print('Warning: source {0} does not exist'.format(source))
+                print('------')
+        
     def list_files(self, destination):
         return self.execute('list-current-files', destination).stdout
 

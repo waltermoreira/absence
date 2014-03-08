@@ -69,6 +69,7 @@ class Main(object):
         return ['all'] + self.driver.destinations
         
     def sources(self, args):
+        self.driver.check_sources()
         print(dedent(
             """
             Sources
