@@ -116,8 +116,11 @@ class DuplicityDriver(object):
     @property
     def sources(self):
         home = self.secrets.get('duplicity', 'home')
-        return [os.path.join(home, source)
-                for source in self.secrets.get('duplicity', 'sources').split()]
+        key = lambda src: os.path.basename(src.lower())
+        return sorted(
+            [os.path.join(home, source)
+             for source in self.secrets.get('duplicity', 'sources').split()],
+            key=key)
 
     @property
     def destinations(self):
