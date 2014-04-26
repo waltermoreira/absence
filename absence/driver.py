@@ -119,7 +119,7 @@ class DuplicityDriver(object):
         key = lambda src: os.path.basename(src.lower())
         return sorted(
             [os.path.join(home, source)
-             for source in self.secrets.get('duplicity', 'sources').split()],
+             for source in self.secrets.get('duplicity', 'sources').splitlines()],
             key=key)
 
     @property
