@@ -134,7 +134,7 @@ def parse_args(args):
                                 help='directory under which to restore')
     parser_restore.add_argument('-f', '--file', nargs=1, metavar='file',
                                 required=False,
-                                help='file or directory to restore')
+                                help='file or directory to restore (use name as displayed in "files")')
 
     parser_remove = subparsers.add_parser('remove', help='remove old files')
     parser_remove.add_argument('-t', '--older-than', nargs=1, metavar='older_than', required=True,
