@@ -16,7 +16,9 @@ class DuplicityDriver(object):
         self.mailer = mailer
         self.duplicity = duplicity_cmd
         self.archive_dir = archive_dir
-        self.send_email = True
+        self.send_email = (self.secrets.getboolean('duplicity', 'mail')
+                           if self.secrets.has_option('duplicity', 'mail')
+                           else False)
         self.set_environment(
             self.secrets.get('s3', 'AWS_ACCESS_KEY_ID'),
             self.secrets.get('s3', 'AWS_SECRET_ACCESS_KEY'),
