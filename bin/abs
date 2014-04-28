@@ -53,7 +53,7 @@ class Main(object):
         relpath = args.file[0] if args.file is not None else None
         print('\nRestoring from:', from_dest, '\n')
         if relpath is not None:
-            print(' --only restoring', relpath)
+            print('*** Only restoring', relpath, '\n')
         self.driver.restore(from_dest, directory, relpath)
 
     def remove(self, args):

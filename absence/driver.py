@@ -49,11 +49,12 @@ class DuplicityDriver(object):
         except sh.ErrorReturnCode:
             options_str = '\n'.join(map(str, options))
             body = self._show_stderr() + '\n' +  options_str
+            print('\n*** ERROR ***\n')
+            print(body)
             if self.send_email:
+                print('\n*** Will send email ***\n')
                 self.mailer.sendmail([self.secrets.get('mail', 'user')],
                                      body, '"absence" failed')
-            else:
-                print(body)
             return None
         
     def backup(self):
